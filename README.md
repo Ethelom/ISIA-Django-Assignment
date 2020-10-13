@@ -30,7 +30,8 @@ pipenv install --dev
 
 * Change directory by running:
 
-``` cd enterprice/
+``` 
+cd enterprice/
 ```
 
 * Now that Django (as well as other dependencies) have been installed in your virtual environemnt, you can run the local server:
