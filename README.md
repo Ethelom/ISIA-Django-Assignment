@@ -3,6 +3,15 @@
 This is the Django assignment of September 2020 for the ISIA course. The use case implemented was the "Store Review", where a customer
 can review a store after a confirmed purchase.
 
+The project contains two apps: **store_review** and **home**. The first one concerns the implemented use case, whereas the second one
+regards the index, which gives access to the use case.
+
+Moreover, there are two folders (static/ and templates/) that do **NOT** pertain to a specific app and as such belong
+to the whole project. Thus, they can be found at the same directory level with the apps.
+This is encouraged according to the Django [docs](https://docs.djangoproject.com/en/3.1/howto/static-files/).
+
+Of course, each app has each own static/ and templates/ folders, but those can be found in each app's respective folder.
+
 # Dependencies and Run
 In order to install the dependencies run the following commands in the root:
 
