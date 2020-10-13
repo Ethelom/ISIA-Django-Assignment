@@ -1,0 +1,151 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>EnterPrice - Write Review</title>
+    <link rel="icon" href="{% static "home/icons/logo-lg.png" %}" type="image/x-icon">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.css">
+    <link rel="stylesheet" href="{% static "css/navbar-theme.css" %}">
+    <link rel="stylesheet" href="{% static "css/core-theme.css" %}">
+    <link rel="stylesheet" href="{% static "store_review/css/rating-theme.css" %}">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</head>
+<body>
+    {% include 'navbar.html' %}
+    <div class="container-fluid" style="margin:30px 80px">
+        <div class="text-center">
+            <h3>On {{purchase.purchase_date}} you bought from
+                <a href="{% url 'view-store-profile' purchase.store.username %}">
+                    {{purchase.store.store_name|escape}}
+                </a>
+                :
+            </h3>
+        </div>
+        <hr>
+        <div class="row" style="margin: 30px">
+            {% for line_item in purchase.lineItems.all %}
+                <div class="col-xs-12 col-md-4 col-lg-3">
+                    <div class="thumbnail">
+                        <div class="caption text-center">
+                            <div class="position-relative">
+                                <img class="img-size-sm" src="{% static line_item.product.product_img %}"/>
+                            </div>
+                            <h4 id="thumbnail-label">{{line_item.product.product_name}}</h4>
+                            <p>
+                                <i class="glyphicon glyphicon-list light-red lighter bigger-120"></i>
+                                {{line_item.product.category}}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="text-center">
+            {% if store_review is None %}
+                <h3>Write a review for <b>{{purchase.store.store_name|escape}}</b>:</h3>
+            {% else %}
+                <h3>Edit your review for <b>{{purchase.store.store_name|escape}}</b>:</h3>
+            {% endif %}
+        </div>
+        <hr>
+        <div class="row" style="margin: 30px">
+            <div class="thumbnail col-xs-12 col-md-12 col-lg-8">
+                <form action="{% url 'submit-review' %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="purchase-id" value="{{purchase.purchase_id}}">
+                    <div class="caption">
+                        <h4>Rate the overall experience:</h4>
+                    </div>
+                    <div class="col-xs-12 col-lg-6">
+                        <div class="caption">
+                            <div class="position-relative">
+                                {% if store_review is None %}
+                                    {% for star in stars %}
+                                        <!-- add new review -->
+                                        <span id="{{star}}" class="fa fa-star fa-lg
+                                        {% if star == 1%}checked{% else %}coloronmouse{%endif%}"
+                                              onclick="fillStars(this.id)"></span>
+                                    {% endfor %}
+                                    <input id="rating" name="rating" value="1" type="hidden">
+                                {% else %}
+                                    {% for star in stars %}
+                                        <!-- edit existing review -->
+                                        <span id="{{star}}" class="fa fa-star fa-lg
+                                        {% if star <= store_review.rating%}checked{% else %}coloronmouse{%endif%}"
+                                              onclick="fillStars(this.id)"></span>
+                                    {% endfor %}
+                                    <input id="rating" name="rating" value="{{store_review.rating}}" type="hidden">
+                                {% endif %}
+
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                    <br>
+                    <div class=" caption">
+                        <h4>Write your comments:</h4>
+                    </div>
+                    <div class="col-xs-12 col-md-12" style="margin-top: 10px">
+                        <div id="textarea-feedback"></div>
+                        <br>
+                        {% if store_review is None %}
+                            <textarea class="form-control animated" id="reviewbody" name="review-body"
+                                      placeholder="Write your comments here..." maxlength="500"></textarea>
+                        {% else %}
+                            <textarea class="form-control animated" id="reviewbody" name="review-body"
+                                      maxlength="500">{{store_review.review_body|escape}}</textarea>
+                        {% endif %}
+                        <div class="form-group">
+                            <div class="col-sm-12 col-xs-12">
+                                {% if store_review is None %}
+                                    <button type="submit" class="btn btn-round enterprice-blue"
+                                            style="margin-top: 10px;margin-bottom: 10px;">
+                                        <span class="fa fa-check"></span> Submit Review
+                                    </button>
+
+                                {% else %}
+                                    <button type="submit" class="btn btn-round enterprice-blue"
+                                            style="margin-top: 10px;margin-bottom: 10px;">
+                                        <span class="fa fa-check"></span> Edit Review
+                                    </button>
+                            {% endif %}
+                                <button type="reset" class="btn btn-round delete-button"
+                                        onclick="javascript:resetForm()"
+                                        style="margin-top: 10px;margin-bottom: 10px;">
+                                    <span class="fa fa-broom"></span> Reset
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% include 'footer.html' %}
+</body>
+<script>
+function fillStars(id) {
+    document.getElementById('rating').value = id;
+    for(var i = 1; i <= 5; i++) {
+        var color = "#606060";
+        if(i <= id) {
+            color = "#315b96";
+        }
+        document.getElementById(i).style.color = color;
+    }
+}
+</script>
+<script>
+    function resetForm() {
+        for(var i = 2; i <= 5; i++) {
+            document.getElementById(i).style.color = "#606060";
+        }
+    }
+</script>
+</html>
